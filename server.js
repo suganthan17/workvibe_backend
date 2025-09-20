@@ -4,8 +4,11 @@ const dotenv = require("dotenv");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const connectDB = require("./config/db");
+
 const userRoutes = require("./routes/userRoutes");
-const postjobRoutes = require("./routes/postjobRoutes");
+const seekerProfileRoutes = require("./routes/seekerprofileRoutes");
+const postjobRoutes = require("./routes/postjobRoutes"); 
+
 dotenv.config();
 connectDB();
 
@@ -26,7 +29,8 @@ app.use(
 );
 
 app.use("/", userRoutes);
-app.use("/", postjobRoutes);
+app.use("/api/seeker/profile", seekerProfileRoutes);
+app.use("/", postjobRoutes); 
 
 app.get("/", (req, res) => res.send("Backend is running"));
 

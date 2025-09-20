@@ -14,10 +14,7 @@ const PostjobSchema = new mongoose.Schema({
   requirements: { type: String, required: true },
   applicationDeadline: { type: Date, required: true },
   applicationLink: { type: String, required: true },
-   postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-
-
-  
-});
+  postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+}, { timestamps: true });
 
 module.exports = mongoose.model("PostJob", PostjobSchema);

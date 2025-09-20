@@ -25,8 +25,7 @@ exports.login = async (req, res) => {
     const isMatch = await bcrypt.compare(Password, user.Password);
     if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
-    // Set both user and userId in session for compatibility
-    req.session.userId = user._id;
+    // Correct session
     req.session.user = { id: user._id, Email: user.Email, Role: user.Role };
 
     res.status(200).json({ message: "Login successful", user: req.session.user });
