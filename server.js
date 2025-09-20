@@ -7,7 +7,7 @@ const connectDB = require("./config/db");
 
 const userRoutes = require("./routes/userRoutes");
 const seekerProfileRoutes = require("./routes/seekerprofileRoutes");
-const postjobRoutes = require("./routes/postjobRoutes"); 
+const postjobRoutes = require("./routes/postjobRoutes");
 
 dotenv.config();
 connectDB();
@@ -15,7 +15,16 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://your-frontend.vercel.app"
+    ],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 app.use(
@@ -24,13 +33,18 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-    cookie: { httpOnly: true, secure: false, sameSite: "lax", maxAge: 1000 * 60 * 60 * 24 },
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24,
+    },
   })
 );
 
 app.use("/", userRoutes);
 app.use("/api/seeker/profile", seekerProfileRoutes);
-app.use("/", postjobRoutes); 
+app.use("/", postjobRoutes);
 
 app.get("/", (req, res) => res.send("Backend is running"));
 
