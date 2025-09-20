@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://workvibe-frontend.vercel.app/"
+      "https://workvibe-frontend.vercel.app"
     ],
     credentials: true,
   })
