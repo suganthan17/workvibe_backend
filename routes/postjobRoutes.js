@@ -5,13 +5,17 @@ const {
   getJobs,
   getJobById,
   deleteJob,
-  getalljobs
+  getalljobs,
+  savejobs,
+  getSavedJobs
 } = require("../controllers/jobController");
 
 router.post("/postjob", postjob);
 router.get("/getjobs", getJobs);
+router.get("/getjob/:id", getJobById);
 router.delete("/deletejobs/:id", deleteJob);
 router.get("/getalljobs", getalljobs);
-router.get("/getjob/:id", getJobById);
+router.post("/savejobs/:id", savejobs);
+router.get("/savedjobs", getSavedJobs);
 
 module.exports = router;
