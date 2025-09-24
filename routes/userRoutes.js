@@ -7,6 +7,7 @@ router.post("/signup", signup);
 router.post("/login", login);
 router.post("/logout", logout);
 
+// Protected routes examples
 router.get("/seeker-dashboard", requireRole("seeker"), (req, res) => {
   res.json({ message: "Welcome Seeker!" });
 });
