@@ -19,7 +19,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://workvibe-frontend.vercel.app",
+      "https://workvibe-frontend.vercel.app"
     ],
     credentials: true,
   })
@@ -27,7 +27,6 @@ app.use(
 
 app.use(express.json());
 
-// Session
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "supersecret",
@@ -36,21 +35,17 @@ app.use(
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // HTTPS only
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 1000 * 60 * 60 * 24, // 1 day
+      maxAge: 1000 * 60 * 60 * 24,
     },
   })
 );
 
-// Routes
-app.use("/api/auth", userRoutes); // login/signup
+app.use("/api/auth", userRoutes);
 app.use("/api/seeker/profile", seekerProfileRoutes);
 app.use("/api/jobs", postjobRoutes);
 
 app.get("/", (req, res) => res.send("Backend is running"));
 
-// Start server
-app.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`)
-);
+app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
