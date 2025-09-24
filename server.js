@@ -15,14 +15,13 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// CORS
 app.use(
   cors({
     origin: [
-      "http://localhost:5173", // local frontend
-      "https://workvibe-frontend.vercel.app", // deployed frontend
+      "http://localhost:5173",
+      "https://workvibe-frontend.vercel.app",
     ],
-    credentials: true, // allow cookies
+    credentials: true,
   })
 );
 
