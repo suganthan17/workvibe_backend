@@ -4,10 +4,9 @@ const {
   createSeekerProfile,
   getSeekerProfile,
   updateSeekerProfile,
-  sidebarInfo
+  sidebarInfo,
 } = require("../controllers/seekerprofileController");
 
-// CRUD
 router.post("/", createSeekerProfile);
 router.get("/", getSeekerProfile);
 router.put("/", updateSeekerProfile);
