@@ -15,18 +15,20 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+// CORS
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
-      "https://workvibe-frontend.vercel.app"
+      "http://localhost:5173", // local frontend
+      "https://workvibe-frontend.vercel.app", // deployed frontend
     ],
-    credentials: true,
+    credentials: true, // allow cookies
   })
 );
 
 app.use(express.json());
 
+// Session
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "supersecret",
@@ -35,18 +37,21 @@ app.use(
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", // HTTPS only
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 1000 * 60 * 60 * 24,
+      maxAge: 1000 * 60 * 60 * 24, // 1 day
     },
   })
 );
 
-app.use("/", userRoutes);
+// Routes
+app.use("/api/auth", userRoutes); // login/signup
 app.use("/api/seeker/profile", seekerProfileRoutes);
-app.use("/", postjobRoutes);
+app.use("/api/jobs", postjobRoutes);
 
 app.get("/", (req, res) => res.send("Backend is running"));
 
-app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
- 
+// Start server
+app.listen(PORT, () =>
+  console.log(`Server running on http://localhost:${PORT}`)
+);
