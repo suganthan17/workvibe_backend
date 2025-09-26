@@ -7,7 +7,7 @@ const connectDB = require("./config/db");
 
 const userRoutes = require("./routes/userRoutes");
 const seekerProfileRoutes = require("./routes/seekerprofileRoutes");
-const postjobRoutes = require("./routes/postjobRoutes");
+const jobsRoutes = require("./routes/jobsRoutes"); 
 
 dotenv.config();
 connectDB();
@@ -15,11 +15,12 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+
 app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://workvibe-frontend.vercel.app"
+      "https://workvibe-frontend.vercel.app",
     ],
     credentials: true,
   })
@@ -42,10 +43,12 @@ app.use(
   })
 );
 
-app.use("/api/auth", userRoutes);
+// Routes
+app.use("/", userRoutes);
 app.use("/api/seeker/profile", seekerProfileRoutes);
-app.use("/api/jobs", postjobRoutes);
+app.use("/api/jobs", jobsRoutes); 
 
 app.get("/", (req, res) => res.send("Backend is running"));
 
+// Start server
 app.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
