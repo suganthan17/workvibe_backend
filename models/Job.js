@@ -1,4 +1,3 @@
-// models/Job.js
 const mongoose = require("mongoose");
 
 const JobSchema = new mongoose.Schema(
@@ -24,10 +23,10 @@ const JobSchema = new mongoose.Schema(
     requirements: { type: String, required: true },
     applicationDeadline: { type: Date, required: true },
     applicationLink: { type: String, required: true },
-    postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" }, // optional if you don't have user
+    postedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     savedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("jobs", JobSchema);
+module.exports = mongoose.model("Job", JobSchema);

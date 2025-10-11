@@ -1,6 +1,6 @@
-const Job = require("../models/jobs");
+const Job = require("../models/Job");
 
-// Post a new job (Recruiter only)
+// Recruiter: Post a new job
 exports.postjob = async (req, res) => {
   if (!req.session.user)
     return res.status(401).json({ success: false, message: "Unauthorized" });
@@ -10,20 +10,20 @@ exports.postjob = async (req, res) => {
     await newJob.save();
     res.status(201).json({ success: true, job: newJob });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// Get all jobs posted by the current recruiter
+// Recruiter: Get jobs posted by self
 exports.getJobs = async (req, res) => {
   if (!req.session.user)
     return res.status(401).json({ success: false, message: "Unauthorized" });
 
   try {
     const jobs = await Job.find({ postedBy: req.session.user.id }).sort({ createdAt: -1 });
-    res.status(200).json({ success: true, count: jobs.length, jobs });
+    res.status(200).json({ success: true, jobs });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -34,7 +34,7 @@ exports.getJobById = async (req, res) => {
     if (!job) return res.status(404).json({ success: false, message: "Job not found" });
     res.status(200).json({ success: true, job });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
@@ -42,24 +42,25 @@ exports.getJobById = async (req, res) => {
 exports.deleteJob = async (req, res) => {
   try {
     const job = await Job.findByIdAndDelete(req.params.id);
-    if (!job) return res.status(404).json({ message: "Job not found" });
-    res.status(200).json({ message: "Removed successfully" });
+    if (!job) return res.status(404).json({ success: false, message: "Job not found" });
+    res.status(200).json({ success: true, message: "Removed successfully" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// Get all jobs (for seekers)
+// Seeker: Get all jobs
 exports.getalljobs = async (req, res) => {
   try {
     const jobs = await Job.find().sort({ createdAt: -1 });
     const currentUserId = req.session?.user?.id || null;
-    res.status(200).json({ jobs, currentUserId });
+    res.status(200).json({ success: true, jobs, currentUserId });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
+// Save or unsave a job
 exports.savejobs = async (req, res) => {
   if (!req.session.user) return res.status(401).json({ success: false });
 
@@ -73,26 +74,31 @@ exports.savejobs = async (req, res) => {
     if (job.savedBy?.includes(userId)) {
       job.savedBy = job.savedBy.filter((id) => id.toString() !== userId);
     } else {
-      if (!job.savedBy) job.savedBy = [];
       job.savedBy.push(userId);
     }
 
     await job.save();
     res.status(200).json({ success: true, savedBy: job.savedBy });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
 };
 
-
+// Get saved jobs
 exports.getSavedJobs = async (req, res) => {
   if (!req.session.user) return res.status(401).json({ success: false });
 
   const userId = req.session.user.id;
   try {
     const jobs = await Job.find({ savedBy: userId });
-    res.status(200).json({ jobs, currentUserId: userId });
+    res.status(200).json({ success: true, jobs, currentUserId: userId });
   } catch (err) {
-    res.status(500).json({ success: false, error: err.message });
+    res.status(500).json({ success: false, message: err.message });
   }
+};
+
+// Applied jobs (dummy)
+exports.getAppliedJobs = async (req, res) => {
+  if (!req.session.user) return res.status(401).json({ success: false });
+  res.status(200).json({ success: true, jobs: [], message: "Applied jobs feature coming soon" });
 };

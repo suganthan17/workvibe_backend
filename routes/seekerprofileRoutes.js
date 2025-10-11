@@ -1,15 +1,20 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
 const {
   createSeekerProfile,
   getSeekerProfile,
   updateSeekerProfile,
-  sidebarInfo,
-} = require("../controllers/seekerprofileController");
+  uploadWorkvibeResume,
+} = require("../controllers/seekerProfileController");
 
-router.post("/", createSeekerProfile);
+// ✅ Multer setup
+const upload = multer({ dest: "uploads/" });
+
+// ✅ Routes
 router.get("/", getSeekerProfile);
-router.put("/", updateSeekerProfile);
-router.get("/sidebar", sidebarInfo);
+router.post("/", createSeekerProfile);
+router.put("/", upload.fields([{ name: "profilePic" }]), updateSeekerProfile);
+router.put("/workvibe", upload.fields([{ name: "workvibeResume" }]), uploadWorkvibeResume);
 
 module.exports = router;
