@@ -6,7 +6,7 @@ const MongoStore = require("connect-mongo");
 const connectDB = require("./config/db");
 
 const userRoutes = require("./routes/userRoutes");
-const seekerProfileRoutes = require("./routes/seekerProfileRoutes");
+const seekerProfileRoutes = require("./routes/seekerprofileRoutes");
 const jobsRoutes = require("./routes/jobsRoutes");
 
 dotenv.config();
@@ -15,32 +15,35 @@ connectDB();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ CORS setup
-app.use(cors({
-  origin: [
-    "http://localhost:5173",
-    "https://workvibe-frontend.vercel.app"
-  ],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://workvibe-frontend.vercel.app",
+    ],
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 
-// ✅ Sessions
-app.use(session({
-  secret: process.env.SESSION_SECRET || "supersecret",
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
-  cookie: {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    maxAge: 1000 * 60 * 60 * 24
-  }
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "supersecret",
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
+    cookie: {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24,
+    },
+  })
+);
 
-// ✅ Routes
+app.use("/uploads", express.static("uploads"));
+
 app.use("/api/users", userRoutes);
 app.use("/api/seeker/profile", seekerProfileRoutes);
 app.use("/api/jobs", jobsRoutes);

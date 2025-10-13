@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
+const path = require("path");
 const {
   createSeekerProfile,
   getSeekerProfile,
@@ -8,13 +9,22 @@ const {
   uploadWorkvibeResume,
 } = require("../controllers/seekerProfileController");
 
-// ✅ Multer setup
-const upload = multer({ dest: "uploads/" });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) =>
+    cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname)),
+});
 
-// ✅ Routes
+const fileFilter = (req, file, cb) => {
+  const allowed = ["image/jpeg", "image/png", "image/jpg"];
+  allowed.includes(file.mimetype) ? cb(null, true) : cb(null, false);
+};
+
+const upload = multer({ storage, fileFilter });
+
 router.get("/", getSeekerProfile);
 router.post("/", createSeekerProfile);
-router.put("/", upload.fields([{ name: "profilePic" }]), updateSeekerProfile);
-router.put("/workvibe", upload.fields([{ name: "workvibeResume" }]), uploadWorkvibeResume);
+router.put("/", upload.single("profilePic"), updateSeekerProfile);
+router.put("/workvibe", upload.single("workvibeResume"), uploadWorkvibeResume);
 
 module.exports = router;
