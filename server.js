@@ -6,7 +6,7 @@ const MongoStore = require("connect-mongo");
 const connectDB = require("./config/db");
 
 const userRoutes = require("./routes/userRoutes");
-const seekerProfileRoutes = require("./routes/seekerprofileRoutes");
+const seekerProfileRoutes = require("./routes/seekerProfileRoutes");
 const jobsRoutes = require("./routes/jobsRoutes");
 
 dotenv.config();
