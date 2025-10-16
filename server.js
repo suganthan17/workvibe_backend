@@ -6,7 +6,7 @@ const MongoStore = require("connect-mongo");
 const connectDB = require("./config/db");
 
 const userRoutes = require("./routes/userRoutes");
-const seekerProfileRoutes = require("./routes/seekerProfileRoutes");
+const seekerProfileRoutes = require("./routes/seekerprofileRoutes");
 const jobsRoutes = require("./routes/jobsRoutes");
 
 dotenv.config();
@@ -17,8 +17,10 @@ const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://workvibe-frontend.vercel.app"],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: [
+      "http://localhost:5173",
+      "https://workvibe-frontend.vercel.app",
+    ],
     credentials: true,
   })
 );
@@ -30,14 +32,11 @@ app.use(
     secret: process.env.SESSION_SECRET || "supersecret",
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URI,
-      ttl: 14 * 24 * 60 * 60,
-    }),
+    store: MongoStore.create({ mongoUrl: process.env.MONGO_URI }),
     cookie: {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 1000 * 60 * 60 * 24,
     },
   })
@@ -51,6 +50,4 @@ app.use("/api/jobs", jobsRoutes);
 
 app.get("/", (req, res) => res.send("Backend is running"));
 
-app.listen(PORT, () =>
-  console.log(`✅ Server running on http://localhost:${PORT}`)
-);
+app.listen(PORT, () => console.log(`✅ Server running on http://localhost:${PORT}`));
