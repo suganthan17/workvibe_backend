@@ -7,6 +7,7 @@ const connectDB = require("./config/db");
 
 const userRoutes = require("./routes/userRoutes");
 const seekerProfileRoutes = require("./routes/seekerprofileRoutes");
+const recruiterprofileRoutes= require("./routes/recruiterProfileRoutes")
 const jobsRoutes = require("./routes/jobsRoutes");
 
 dotenv.config();
@@ -46,6 +47,7 @@ app.use("/uploads", express.static("uploads"));
 
 app.use("/api/users", userRoutes);
 app.use("/api/seeker/profile", seekerProfileRoutes);
+app.use("/api/recruiter/profile",recruiterprofileRoutes)
 app.use("/api/jobs", jobsRoutes);
 
 app.get("/", (req, res) => res.send("Backend is running"));

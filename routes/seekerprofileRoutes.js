@@ -6,7 +6,6 @@ const {
   createSeekerProfile,
   getSeekerProfile,
   updateSeekerProfile,
-  uploadWorkvibeResume,
 } = require("../controllers/seekerProfileController");
 
 const storage = multer.diskStorage({
@@ -25,6 +24,5 @@ const upload = multer({ storage, fileFilter });
 router.get("/", getSeekerProfile);
 router.post("/", createSeekerProfile);
 router.put("/", upload.single("profilePic"), updateSeekerProfile);
-router.put("/workvibe", upload.single("workvibeResume"), uploadWorkvibeResume);
 
 module.exports = router;

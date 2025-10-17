@@ -1,3 +1,4 @@
+// models/RecruiterProfile.js
 const mongoose = require("mongoose");
 
 const recruiterProfileSchema = new mongoose.Schema({
@@ -7,19 +8,17 @@ const recruiterProfileSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  company: {
-    name: String,
-    industry: String,
-    size: String,
-    location: String,
+  basicInfo: {
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    position: { type: String, required: true },
   },
-  contact: {
-    name: String,
-    email: String,
-    phone: String,
+  companyInfo: {
+    name: { type: String, required: true },
+    location: { type: String, required: true },
+    logo: { type: String }, // URL or file path to the logo
+    website: { type: String },
   },
-  about: { type: String },
-  jobs: { type: String },
 });
 
-module.exports=mongoose.model("RecruiterProfile",recruiterProfileSchema);
+module.exports = mongoose.model("RecruiterProfile", recruiterProfileSchema);

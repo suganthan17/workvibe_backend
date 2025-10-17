@@ -56,19 +56,3 @@ exports.updateSeekerProfile = async (req, res) => {
   }
 };
 
-exports.uploadWorkvibeResume = async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
-
-    const userId = req.session.user.id;
-    const profile = await SeekerProfile.findOneAndUpdate(
-      { userId },
-      { workvibeResume: req.file.path },
-      { new: true }
-    );
-
-    res.json({ message: "WorkVibe resume uploaded", profile });
-  } catch (err) {
-    res.status(500).json({ message: "Error uploading resume" });
-  }
-};
