@@ -8,6 +8,7 @@ const {
   createRecruiterProfile,
   getRecruiterProfile,
   updateRecruiterProfile,
+  getRecruiterProfileById,
 } = require("../controllers/recruiterProfileController");
 
 // ensure upload folder exists
@@ -29,7 +30,7 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png|webp/;
+    const fileTypes = /jpeg|jpg|png|webp|svg/;
     const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
     const mimeType = fileTypes.test(file.mimetype);
     if (extName && mimeType) return cb(null, true);
@@ -40,5 +41,7 @@ const upload = multer({
 router.post("/create", createRecruiterProfile);
 router.get("/get", getRecruiterProfile);
 router.put("/update", upload.single("logo"), updateRecruiterProfile);
+router.get("/get/:userId", getRecruiterProfileById);
+
 
 module.exports = router;
