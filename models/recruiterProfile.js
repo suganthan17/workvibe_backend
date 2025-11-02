@@ -1,4 +1,3 @@
-// models/RecruiterProfile.js
 const mongoose = require("mongoose");
 
 const recruiterProfileSchema = new mongoose.Schema({
@@ -9,15 +8,15 @@ const recruiterProfileSchema = new mongoose.Schema({
     unique: true,
   },
   basicInfo: {
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    position: { type: String, required: true },
+    name: { type: String, default: "" },
+    email: { type: String, default: "" },
+    position: { type: String, default: "" },
   },
   companyInfo: {
-    name: { type: String, required: true },
-    location: { type: String, required: true },
-    logo: { type: String }, // URL or file path to the logo
-    website: { type: String },
+    name: { type: String, default: "" },
+    location: { type: String, default: "" },
+    logo: { type: String, default: "" }, 
+    website: { type: String, default: "" },
   },
 });
 
