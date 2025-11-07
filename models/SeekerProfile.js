@@ -11,6 +11,7 @@ const SeekerProfileSchema = new mongoose.Schema({
   },
   locationInfo: {
     address: String,
+    city: String,
     state: String,
     country: String,
   },
