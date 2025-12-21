@@ -51,6 +51,8 @@ app.use("/api/recruiter/profile", recruiterProfileRoutes);
 app.use("/api/jobs", jobsRoutes);
 app.use("/api/application", applicationRoutes);
 
+
+
 app.get("/", (req, res) => res.send("✅ WorkVibe backend is running successfully!"));
 
 app.listen(PORT, () => console.log(`🚀 Server running at: http://localhost:${PORT}`));
