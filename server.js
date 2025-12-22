@@ -16,10 +16,18 @@ const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: ["http://localhost:5173", "https://workvibe-frontend.vercel.app"],
+    origin: [
+      "http://localhost:5173",
+      "https://workvibe-frontend.vercel.app",
+      "https://workvibe-frontend-dgdkcmn9v-suganthan-s-vs-projects.vercel.app"
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
     credentials: false,
   })
 );
+
+app.options("*", cors());
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
