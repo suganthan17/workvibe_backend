@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { requireRole } = require("../middleware/auth");
 
 const {
   applyForJob,
@@ -8,16 +9,32 @@ const {
   updateApplicationStatus,
   getMyApplications,
   getMyApplicationsCount,
+  hasApplied,
 } = require("../controllers/applicationController");
 
-/* JOB SEEKER */
-router.post("/apply", applyForJob);
-router.get("/seeker/applications", getMyApplications);
-router.get("/seeker/applications/count", getMyApplicationsCount);
+router.post("/apply", requireRole("seeker"), applyForJob);
+router.get("/seeker/applications", requireRole("seeker"), getMyApplications);
+router.get(
+  "/seeker/applications/count",
+  requireRole("seeker"),
+  getMyApplicationsCount
+);
+router.get(
+  "/seeker/has-applied/:jobId",
+  requireRole("seeker"),
+  hasApplied
+);
 
-/* RECRUITER */
-router.get("/:jobId/applicants", getApplicantsByJob);
-router.get("/recruiter/all", getApplicationsForRecruiter);
-router.put("/update/:id", updateApplicationStatus);
+router.get("/:jobId/applicants", requireRole("recruiter"), getApplicantsByJob);
+router.get(
+  "/recruiter/all",
+  requireRole("recruiter"),
+  getApplicationsForRecruiter
+);
+router.put(
+  "/update/:id",
+  requireRole("recruiter"),
+  updateApplicationStatus
+);
 
 module.exports = router;

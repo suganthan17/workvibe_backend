@@ -1,82 +1,75 @@
 const RecruiterProfile = require("../models/RecruiterProfile");
 
-exports.createRecruiterProfile = async (req, res) => {
-  try {
-    const userId = req.session?.user?.id;
-    if (!userId) return res.status(401).json({ message: "Unauthorized" });
-    const existing = await RecruiterProfile.findOne({ userId });
-    if (existing)
-      return res.status(400).json({ message: "Profile already exists" });
-    const profile = new RecruiterProfile({
-      userId,
-      basicInfo: {
-        name: req.session.user?.username || req.session.user?.name || "",
-        email: req.session.user?.email || "",
-        position: "",
-      },
-      companyInfo: { name: "", location: "", logo: "", website: "" },
-    });
-    await profile.save();
-    res.status(201).json(profile);
-  } catch (err) {
-    res.status(500).json({ message: "Error creating recruiter profile" });
-  }
-};
-
 exports.getRecruiterProfile = async (req, res) => {
   try {
-    const userId = req.session?.user?.id;
-    if (!userId) return res.status(401).json({ message: "Unauthorized" });
-    const profile = await RecruiterProfile.findOne({ userId });
-    if (!profile) return res.status(404).json({ message: "Profile not found" });
+    const userId = req.session.user.id;
+
+    let profile = await RecruiterProfile.findOne({ userId });
+
+    if (!profile) {
+      profile = await RecruiterProfile.create({
+        userId,
+        basicInfo: {
+          name: req.session.user.Username || "",
+          email: req.session.user.Email || "",
+          position: "",
+        },
+        companyInfo: {
+          name: "",
+          location: "",
+          logo: "",
+          website: "",
+        },
+      });
+    }
+
     res.json(profile);
   } catch (err) {
     res.status(500).json({ message: "Error fetching recruiter profile" });
   }
 };
 
-exports.getRecruiterProfileById = async (req, res) => {
-  try {
-    const { userId } = req.params;
-    if (!userId) return res.status(400).json({ message: "User ID required" });
-
-    const profile = await RecruiterProfile.findOne({ userId });
-    if (!profile) return res.status(404).json({ message: "Profile not found" });
-
-    res.json({ success: true, profile });
-  } catch (err) {
-    console.error("Error fetching recruiter profile by ID:", err);
-    res.status(500).json({ message: "Server error" });
-  }
-};
-
-
-
 exports.updateRecruiterProfile = async (req, res) => {
   try {
-    const userId = req.session?.user?.id;
-    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+    const userId = req.session.user.id;
 
-    const profile = await RecruiterProfile.findOne({ userId });
-    if (!profile) return res.status(404).json({ message: "Profile not found" });
+    const updateData = {};
 
     if (req.body.basicInfo) {
-      const basicInfo = JSON.parse(req.body.basicInfo);
-      Object.assign(profile.basicInfo, basicInfo);
+      const basicInfo =
+        typeof req.body.basicInfo === "string"
+          ? JSON.parse(req.body.basicInfo)
+          : req.body.basicInfo;
+
+      Object.keys(basicInfo).forEach((key) => {
+        updateData[`basicInfo.${key}`] = basicInfo[key];
+      });
     }
 
     if (req.body.companyInfo) {
-      const companyInfo = JSON.parse(req.body.companyInfo);
-      Object.assign(profile.companyInfo, companyInfo);
+      const companyInfo =
+        typeof req.body.companyInfo === "string"
+          ? JSON.parse(req.body.companyInfo)
+          : req.body.companyInfo;
+
+      Object.keys(companyInfo).forEach((key) => {
+        updateData[`companyInfo.${key}`] = companyInfo[key];
+      });
     }
 
     if (req.file) {
-      profile.companyInfo.logo = req.file.path.replace(/\\/g, "/");
+      updateData["companyInfo.logo"] = req.file.path.replace(/\\/g, "/");
     }
 
-    await profile.save();
+    const profile = await RecruiterProfile.findOneAndUpdate(
+      { userId },
+      { $set: updateData },
+      { new: true, upsert: true }
+    );
+
     res.json(profile);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Error updating recruiter profile" });
   }
 };

@@ -1,47 +1,51 @@
-// routes/recruiterProfileRoutes.js
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const path = require("path");
-const fs = require("fs");
+const { requireRole } = require("../middleware/auth");
+const RecruiterProfile = require("../models/RecruiterProfile");
 const {
-  createRecruiterProfile,
   getRecruiterProfile,
   updateRecruiterProfile,
-  getRecruiterProfileById,
 } = require("../controllers/recruiterProfileController");
 
-// ensure upload folder exists
-const uploadDir = "uploads/recruiterLogos";
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+const upload = multer({ dest: "uploads/" });
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueName = Date.now() + "-" + file.originalname.replace(/\s+/g, "-");
-    cb(null, uniqueName);
-  },
+/* =======================
+   PRIVATE (Recruiter)
+======================= */
+router.get("/", requireRole("recruiter"), getRecruiterProfile);
+
+router.put(
+  "/",
+  requireRole("recruiter"),
+  upload.single("logo"),
+  updateRecruiterProfile
+);
+
+/* =======================
+   PUBLIC (Job Details)
+======================= */
+router.get("/public/:userId", async (req, res) => {
+  try {
+    const profile = await RecruiterProfile.findOne({
+      userId: req.params.userId,
+    }).lean();
+
+    if (!profile) {
+      return res.status(404).json({ message: "Recruiter profile not found" });
+    }
+
+    res.status(200).json({
+      companyName: profile.companyInfo?.name || "",
+      companyLocation: profile.companyInfo?.location || "",
+      companyLogo: profile.companyInfo?.logo || "",
+      email: profile.basicInfo?.email || "",
+      website: profile.companyInfo?.website || "",
+    });
+  } catch (err) {
+    console.error("Public recruiter fetch error:", err);
+    res.status(500).json({ message: "Server error" });
+  }
 });
-
-const upload = multer({
-  storage,
-  fileFilter: (req, file, cb) => {
-    const fileTypes = /jpeg|jpg|png|webp|svg/;
-    const extName = fileTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimeType = fileTypes.test(file.mimetype);
-    if (extName && mimeType) return cb(null, true);
-    cb(new Error("Only images (jpeg, jpg, png, webp) are allowed"));
-  },
-});
-
-router.post("/create", createRecruiterProfile);
-router.get("/get", getRecruiterProfile);
-router.put("/update", upload.single("logo"), updateRecruiterProfile);
-router.get("/get/:userId", getRecruiterProfileById);
-
 
 module.exports = router;

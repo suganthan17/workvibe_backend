@@ -1,5 +1,7 @@
 const express = require("express");
 const router = express.Router();
+const { requireRole } = require("../middleware/auth");
+
 const {
   postjob,
   getJobs,
@@ -12,15 +14,17 @@ const {
 } = require("../controllers/jobsController");
 
 // Recruiter routes
-router.post("/postjob", postjob);
-router.get("/getjobs", getJobs);
+router.post("/postjob", requireRole("recruiter"), postjob);
+router.get("/getjobs", requireRole("recruiter"), getJobs);
+router.delete("/deletejobs/:id", requireRole("recruiter"), deleteJob);
+
+// Public routes
 router.get("/getjob/:id", getJobById);
-router.delete("/deletejobs/:id", deleteJob);
+router.get("/getalljobs", getalljobs);
 
 // Seeker routes
-router.get("/getalljobs", getalljobs);
-router.post("/savejobs/:id", savejobs);
-router.get("/savedjobs", getSavedJobs);
-router.get("/applied", getAppliedJobs);
+router.post("/savejobs/:id", requireRole("seeker"), savejobs);
+router.get("/savedjobs", requireRole("seeker"), getSavedJobs);
+router.get("/applied", requireRole("seeker"), getAppliedJobs);
 
 module.exports = router;

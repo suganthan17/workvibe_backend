@@ -51,13 +51,20 @@ exports.getJobById = async (req, res) => {
 
 exports.deleteJob = async (req, res) => {
   try {
-    const job = await Job.findByIdAndDelete(req.params.id);
-    if (!job) return res.status(404).json({ success: false, message: "Job not found" });
-    res.status(200).json({ success: true, message: "Removed successfully" });
+    const job = await Job.findOneAndDelete({
+      _id: req.params.id,
+      postedBy: req.session.user.id,
+    });
+
+    if (!job)
+      return res.status(404).json({ success: false, message: "Job not found" });
+
+    res.json({ success: true, message: "Removed successfully" });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 };
+
 
 exports.getalljobs = async (req, res) => {
   try {
@@ -128,6 +135,17 @@ exports.getSavedJobs = async (req, res) => {
 };
 
 exports.getAppliedJobs = async (req, res) => {
-  if (!req.session.user) return res.status(401).json({ success: false });
-  res.status(200).json({ success: true, jobs: [], message: "Applied jobs feature coming soon" });
+  try {
+    const userId = req.session.user.id;
+
+    const applications = await Application.find({ userId })
+      .populate("jobId")
+      .sort({ appliedAt: -1 });
+
+    const jobs = applications.map((a) => a.jobId);
+
+    res.json({ success: true, jobs });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 };

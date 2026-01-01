@@ -19,8 +19,6 @@ const JobSchema = new mongoose.Schema(
     jobDescription: { type: String, required: true },
     responsibilities: { type: String, required: true },
     requirements: { type: String, required: true },
-    applicationDeadline: { type: Date, required: true },
-    applicationLink: { type: String, required: true },
     companyName: { type: String, default: "" },
     location: { type: String, default: "" },
     companyLogo: { type: String, default: "" },

@@ -4,8 +4,6 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-/* ================= RESUME UPLOAD ================= */
-
 const UPLOAD_DIR = path.join(__dirname, "../uploads/resumes");
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
@@ -18,8 +16,6 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage });
-
-/* ================= APPLY FOR JOB ================= */
 
 exports.applyForJob = [
   upload.single("resume"),
@@ -52,12 +48,9 @@ exports.applyForJob = [
   },
 ];
 
-/* ================= SEEKER: MY APPLICATIONS ================= */
-
 exports.getMyApplications = async (req, res) => {
   try {
     const userId = req.session?.user?.id;
-
     if (!userId)
       return res.status(401).json({ message: "Unauthorized" });
 
@@ -71,14 +64,12 @@ exports.getMyApplications = async (req, res) => {
   }
 };
 
-/* ================= RECRUITER: APPLICANTS BY JOB ================= */
-
 exports.getApplicantsByJob = async (req, res) => {
   try {
     const { jobId } = req.params;
 
     const applications = await Application.find({ jobId })
-      .populate("userId", "name email")
+      .populate("userId", "Username Email")
       .sort({ appliedAt: -1 });
 
     res.json({ applications });
@@ -87,12 +78,9 @@ exports.getApplicantsByJob = async (req, res) => {
   }
 };
 
-/* ================= RECRUITER: ALL APPLICATIONS ================= */
-
 exports.getApplicationsForRecruiter = async (req, res) => {
   try {
     const recruiterId = req.session?.user?.id;
-
     if (!recruiterId)
       return res.status(401).json({ message: "Unauthorized" });
 
@@ -111,8 +99,6 @@ exports.getApplicationsForRecruiter = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
-/* ================= UPDATE STATUS ================= */
 
 exports.updateApplicationStatus = async (req, res) => {
   try {
@@ -141,14 +127,26 @@ exports.updateApplicationStatus = async (req, res) => {
 exports.getMyApplicationsCount = async (req, res) => {
   try {
     const userId = req.session?.user?.id;
-
     if (!userId)
       return res.status(401).json({ message: "Unauthorized" });
 
     const count = await Application.countDocuments({ userId });
-
     res.json({ count });
   } catch (err) {
     res.status(500).json({ message: err.message });
+  }
+};
+
+exports.hasApplied = async (req, res) => {
+  try {
+    const userId = req.session?.user?.id;
+    const { jobId } = req.params;
+
+    if (!userId) return res.json({ applied: false });
+
+    const exists = await Application.findOne({ userId, jobId });
+    res.json({ applied: !!exists });
+  } catch {
+    res.status(500).json({ applied: false });
   }
 };
